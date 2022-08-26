@@ -1,0 +1,98 @@
+	<project >
+		
+	<!--Set the folder hierarchies-->
+	<property name="lib.dir"     value="libs"/>
+	<property name="src.dir"     value="src"/>
+	<property name="bin.dir"   value="bin"/>
+	<!--property name="cuda.dir"   value="cudaFiles"/-->
+	
+
+	<!--Set the classpath-->
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    	<pathelement location="${bin.dir}"/>
+    </path>
+
+	<!--Clean and compile-->
+    <target name="compile">
+    	<!--delete-->
+    		<!--fileset dir="${cuda.dir}" includes="**/*.cubin"/--> 
+    	<!--set this so that all .cubin files are removed prior to running, if rebuild the .cu file-->
+    	<!--/delete-->
+        <delete dir="${bin.dir}"/>
+        <mkdir dir="${bin.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="classpath"/>
+    </target>
+
+		
+		
+	<!--RUN TARGETS-->
+
+		<!--ABEM-->
+		  <target name="run_ABEM">
+			    <java 
+			    	classname="us.fl.state.fwc.abem.Initialize" 
+			    	classpathref="classpath" 
+			    	fork="true" >
+			    	<jvmarg value="-XX:+UnlockExperimentalVMOptions"/>
+			    	<jvmarg value="-XX:+UseG1GC"/>
+			    	<jvmarg value="-Xmx3200m"/>
+			    	<jvmarg value="-server"/>
+			    	<jvmarg value="-Djava.library.path=${lib.dir};%PATH%"/>
+			    </java>
+		  </target>
+
+		<!--SPAWN MODEL BATCH RUNNER-->
+		  <target name="run_SpawnModel">
+			    <java 
+			    	classname="us.fl.state.fwc.abem.spawn.SpawnModelBatchRunner" 
+			    	classpathref="classpath" 
+			    	fork="true" >
+			    	<jvmarg value="-XX:+UnlockExperimentalVMOptions"/>
+			    	<jvmarg value="-XX:+UseG1GC"/>
+			    	<jvmarg value="-Xmx16000m"/>
+			    	<jvmarg value="-server"/>
+			    	<jvmarg value="-Djava.library.path=${lib.dir};%PATH%"/>
+			    </java>
+		  </target>
+		
+		
+		  	
+		<!--BOLTS-->
+		  <target name="run_BOLTs">
+			    <java 
+			    	classname="us.fl.state.fwc.abem.dispersal.bolts.BOLTSScheduler" 
+			    	classpathref="classpath" 
+			    	fork="true" >
+			    	<jvmarg value="-Xmx4096m"/>
+			    	<jvmarg value="-server"/>
+			    	<jvmarg value="-Djava.library.path=${lib.dir};%PATH%"/>
+			    </java>
+		  </target>
+		
+		
+		<!--ASCI_2_NetCDF-->
+		  <target name="run_ASCI_2_NetCDF">
+			    <java 
+			    	classname="us.fl.state.fwc.abem.hydro.efdc.ASCI_2_NetCDF" 
+			    	classpathref="classpath" 
+			    	fork="true" >
+			    	<jvmarg value="-Xmx4096m"/>
+			    	<jvmarg value="-server"/>
+			    	<jvmarg value="-Djava.library.path=${lib.dir};%PATH%"/>
+			    </java>
+		  </target>
+
+		<!--ASCI_2_NetCDF-->
+		  <target name="run_Test">
+			    <java 
+			    	classname="us.fl.state.fwc.abem.test.MainTester" 
+			    	classpathref="classpath" 
+			    	fork="true" >
+			    	<jvmarg value="-Xmx4096m"/>
+			    	<jvmarg value="-server"/>
+			    	<jvmarg value="-Djava.library.path=${lib.dir};%PATH%"/>
+			    </java>
+		  </target>
+
+</project>
